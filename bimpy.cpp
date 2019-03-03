@@ -226,6 +226,14 @@ PYBIND11_MODULE(_bimpy, m) {
 	null.null = true;
 
 	m.doc() = "bimpy - bundled imgui for python";
+    
+	py::enum_<ImGuiDir_>(m, "Direction", py::arithmetic())
+		.value("None", ImGuiDir_::ImGuiDir_None)
+		.value("Left", ImGuiDir_::ImGuiDir_Left)
+		.value("Right", ImGuiDir_::ImGuiDir_Right)
+		.value("Up", ImGuiDir_::ImGuiDir_Up)
+		.value("Down", ImGuiDir_::ImGuiDir_Down)	
+		.export_values();
 
 	py::enum_<ImGuiCond_>(m, "Condition", py::arithmetic())
 		.value("Always", ImGuiCond_::ImGuiCond_Always)
@@ -696,6 +704,12 @@ PYBIND11_MODULE(_bimpy, m) {
 	m.def("button", &ImGui::Button, py::arg("label"), py::arg("size") = ImVec2(0,0));
 	m.def("small_button", &ImGui::SmallButton);
 	m.def("invisible_button", &ImGui::InvisibleButton);
+	m.def("arrow_button", [](const char* str_id, ImGuiDir dir)
+		{
+			return ImGui::ArrowButton(str_id, dir);
+		},
+		py::arg("str_id"), py::arg("dir") = -1 );
+	
 	m.def("collapsing_header", [](const char* label, ImGuiTreeNodeFlags flags){ return ImGui::CollapsingHeader(label, flags); }, py::arg("label"), py::arg("flags") = 0);
 	m.def("checkbox", [](const char* label, Bool& v){ return ImGui::Checkbox(label, &v.value); });
 	m.def("radio_button", [](const char* label, bool active){ return ImGui::RadioButton(label, active); });
