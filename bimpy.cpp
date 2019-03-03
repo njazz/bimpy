@@ -300,6 +300,15 @@ PYBIND11_MODULE(_bimpy, m) {
 		.value("NavLeftJumpsBackHere", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_NavLeftJumpsBackHere)		
 		.export_values();
 
+	py::enum_<ImGuiSelectableFlags_>(m, "SelectableFlags", py::arithmetic())
+		.value("None", ImGuiSelectableFlags_::ImGuiSelectableFlags_None)
+		.value("DontClosePopups", ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups)
+		.value("SpanAllColumns", ImGuiSelectableFlags_::ImGuiSelectableFlags_SpanAllColumns)
+		.value("AllowDoubleClick", ImGuiSelectableFlags_::ImGuiSelectableFlags_AllowDoubleClick)
+		.value("Disabled", ImGuiSelectableFlags_::ImGuiSelectableFlags_Disabled)
+		.export_values();
+
+
 	py::enum_<ImGuiCol_>(m, "Colors")
 		.value("Text", ImGuiCol_::ImGuiCol_Text)
 		.value("TextDisabled", ImGuiCol_::ImGuiCol_TextDisabled)
