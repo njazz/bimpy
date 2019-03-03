@@ -534,16 +534,50 @@ PYBIND11_MODULE(_bimpy, m) {
 		{
 			ImGui::StyleColorsLight();
 		});
-
-	m.def("show_test_window", [](){ ImGui::ShowDemoWindow(); }, "create demo/test window (previously called ShowTestWindow). demonstrate most ImGui features.");	// deprecated
-	m.def("show_demo_window", [](){ ImGui::ShowDemoWindow(); }, "create demo/test window (previously called ShowTestWindow). demonstrate most ImGui features.");
-	m.def("show_metrics_window", [](){ ImGui::ShowMetricsWindow(); }, "create metrics window. display ImGui internals: draw commands (with individual draw calls and vertices), window list, basic internal state, etc.");
-	m.def("show_style_editor", [](){ ImGui::ShowStyleEditor(); }, "add style editor block (not a window). you can pass in a reference ImGuiStyle structure to compare to, revert to and save to (else it uses the default style)");
-	m.def("show_style_selector", [](const char* label){ ImGui::ShowStyleSelector(label); }, "add style selector block (not a window), essentially a combo listing the default styles.");
-	m.def("show_font_selector", [](const char* label){ ImGui::ShowFontSelector(label); }, "add font selector block (not a window), essentially a combo listing the loaded fonts.");
-	m.def("show_user_guide", [](){ ImGui::ShowUserGuide(); }, "add basic help/info block (not a window): how to manipulate ImGui as a end-user (mouse/keyboard controls).");
-
-
+	
+	m.def("show_test_window", [](Bool& opened)
+		{
+			ImGui::ShowDemoWindow(opened.null ? nullptr : &opened.value);
+		},
+		"create demo/test window (previously called ShowTestWindow). demonstrate most ImGui features.",
+		py::arg("opened") = null);	// deprecated
+	
+	m.def("show_demo_window", [](Bool& opened)
+		{ 
+			ImGui::ShowDemoWindow(opened.null ? nullptr : &opened.value); 
+		},
+		"create demo/test window (previously called ShowTestWindow). demonstrate most ImGui features.",
+		py::arg("opened") = null);
+	
+	m.def("show_metrics_window", [](Bool& opened) 
+		{ 
+			ImGui::ShowMetricsWindow(opened.null ? nullptr : &opened.value); 
+		}, 
+		"create metrics window. display ImGui internals: draw commands (with individual draw calls and vertices), window list, basic internal state, etc.",
+		py::arg("opened") = null);
+	
+	m.def("show_style_editor", []()
+		{
+			ImGui::ShowStyleEditor();
+		},
+		"add style editor block (not a window). you can pass in a reference ImGuiStyle structure to compare to, revert to and save to (else it uses the default style)");
+	m.def("show_style_selector", [](const char* label)
+		{
+			ImGui::ShowStyleSelector(label);
+		},
+		"add style selector block (not a window), essentially a combo listing the default styles.");
+	m.def("show_font_selector", [](const char* label)
+		{
+			ImGui::ShowFontSelector(label);
+		},
+		"add font selector block (not a window), essentially a combo listing the loaded fonts.");
+	m.def("show_user_guide", []()
+		{
+			ImGui::ShowUserGuide();
+		},
+		"add basic help/info block (not a window): how to manipulate ImGui as a end-user (mouse/keyboard controls).");
+	
+	
 	m.def("begin",[](const std::string& name, Bool& opened, ImGuiWindowFlags flags) -> bool
 		{
 			return ImGui::Begin(name.c_str(), opened.null ? nullptr : &opened.value, flags);
