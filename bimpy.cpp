@@ -39,7 +39,7 @@ public:
 	int GetWidth() const;
 
 	int GetHeight() const;
-    
+
     bool IsActive();
     void KeepFrame();
     void Wake();
@@ -138,13 +138,13 @@ void Context::Init(int width, int height, const std::string& name)
 				io.MouseDown[button] = action == GLFW_PRESS;
 			}
 		});
-        
+
         glfwSetWindowFocusCallback(m_window, [](GLFWwindow* window, int focused)
         {
             Context* ctx = static_cast<Context*>(glfwGetWindowUserPointer(window));
             ctx->is_active = focused;
         });
-        
+
 	}
 }
 
@@ -190,7 +190,7 @@ void Context::KeepFrame()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
-    
+
     ImGui::Render();
     glfwMakeContextCurrent(m_window);
     glViewport(0, 0, m_width, m_height);
@@ -229,7 +229,7 @@ int Context::GetHeight() const
 {
 	return m_height;
 }
-                                   
+
 bool Context::IsActive()
 {
     return is_active;
@@ -1298,5 +1298,13 @@ PYBIND11_MODULE(_bimpy, m) {
 	m.attr("key_right_control") = py::int_(GLFW_KEY_RIGHT_CONTROL);
 	m.attr("key_right_alt") = py::int_(GLFW_KEY_RIGHT_ALT);
 	m.attr("key_right_super") = py::int_(GLFW_KEY_RIGHT_SUPER);
+
+	// docking
+	m.def("enable_docking", [](){
+		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	});
+
+	m.def("set_next_window_dock_id", &ImGui::SetNextWindowDockID);
+	m.def("get_window_dock_id", &ImGui::GetWindowDockID);
 
 }
