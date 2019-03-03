@@ -1027,11 +1027,11 @@ PYBIND11_MODULE(_bimpy, m) {
 
 	m.def("selectable", [](
 		std::string label,
-		Bool& selected,
+		Bool selected = false,
 		ImGuiSelectableFlags flags = 0,
 		ImVec2 size = ImVec2(0,0))->bool
 		{
-			return ImGui::Selectable(label.c_str(), &selected.value, flags, size);
+			return ImGui::Selectable(label.c_str(), (bool*) (selected.null ? nullptr : &selected.value), flags, size);
 		}
 		, py::arg("label")
 		, py::arg("selected")
