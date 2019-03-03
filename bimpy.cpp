@@ -950,6 +950,11 @@ PYBIND11_MODULE(_bimpy, m) {
 		col.w = color[3];
 		return result;
 	});
+	
+	m.def("color_convert_float4_to_u32", [](const ImVec4& in)->ImU32
+	{	
+		return ImGui::ColorConvertFloat4ToU32(in);
+	}); 
 
 
 	m.def("slider_float", [](const char* label, Float& v, float v_min, float v_max, const char* display_format, float power)
