@@ -283,6 +283,22 @@ PYBIND11_MODULE(_bimpy, m) {
 		//.value("NoUndoRedo", ImGuiInputTextFlags_::ImGuiInputTextFlags_NoUndoRedo)
 		.value("Multiline", ImGuiInputTextFlags_::ImGuiInputTextFlags_Multiline)
 		.export_values();
+	
+	py::enum_<ImGuiTreeNodeFlags_>(m, "TreeNodeFlags", py::arithmetic())
+		.value("None", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_None)
+		.value("Selected", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Selected)
+		.value("Framed", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Framed)
+		.value("AllowItemOverlap", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_AllowItemOverlap)
+		.value("NoTreePushOnOpen", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_NoTreePushOnOpen)
+		.value("NoAutoOpenOnLog", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_NoAutoOpenOnLog)
+		.value("DefaultOpen", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen)
+		.value("OpenOnDoubleClick", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnDoubleClick)
+		.value("OpenOnArrow", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnArrow)
+		.value("Leaf", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf)
+		.value("Bullet", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Bullet)
+		.value("FramePadding", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_FramePadding)
+		.value("NavLeftJumpsBackHere", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_NavLeftJumpsBackHere)		
+		.export_values();
 
 	py::enum_<ImGuiCol_>(m, "Colors")
 		.value("Text", ImGuiCol_::ImGuiCol_Text)
