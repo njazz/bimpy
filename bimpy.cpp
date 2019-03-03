@@ -406,6 +406,21 @@ PYBIND11_MODULE(_bimpy, m) {
 				self.Render();
 			});
 
+	py::class_<ImGuiListClipper>(m, "ImGuiListClipper")
+		.def(py::init( [](int items_count, float items_height)
+			{
+				return ImGuiListClipper(items_count, items_height);
+			}),
+			"",
+			py::arg("items_count"), py::arg("items_height") = -1.0f)
+		.def("step", &ImGuiListClipper::Step)
+		.def_readwrite("start_pos_y", &ImGuiListClipper::StartPosY)
+		.def_readwrite("items_heigth", &ImGuiListClipper::ItemsHeight)
+		.def_readwrite("items_count", &ImGuiListClipper::ItemsCount)
+		.def_readwrite("step_no", &ImGuiListClipper::StepNo)
+		.def_readwrite("display_start", &ImGuiListClipper::DisplayStart)
+		.def_readwrite("display_end", &ImGuiListClipper::DisplayEnd);
+
 	py::enum_<ImDrawCornerFlags_>(m, "Corner")
 		.value("TopLeft", ImDrawCornerFlags_TopLeft)
 		.value("TopRight", ImDrawCornerFlags_TopRight)
