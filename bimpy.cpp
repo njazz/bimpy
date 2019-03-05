@@ -1058,6 +1058,28 @@ PYBIND11_MODULE(_bimpy, m) {
 		, py::arg("stride") = sizeof(float)
 		);
 
+	m.def("plot_histogram", [](
+		const char* label,
+		const std::vector<float>& values,
+		int values_offset = 0,
+		const char* overlay_text = NULL,
+		float scale_min = FLT_MAX,
+		float scale_max = FLT_MAX,
+		ImVec2 graph_size = ImVec2(0,0),
+		int stride = sizeof(float))
+		{
+			ImGui::PlotHistogram(label, values.data(), (int)values.size(), values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
+		}
+		, py::arg("label")
+		, py::arg("values")
+		, py::arg("values_offset") = 0
+		, py::arg("overlay_text") = nullptr
+		, py::arg("scale_min") = FLT_MAX
+		, py::arg("scale_max") = FLT_MAX
+		, py::arg("graph_size") = ImVec2(0,0)
+		, py::arg("stride") = sizeof(float)
+		);
+
 	m.def("progress_bar", &ImGui::ProgressBar, py::arg("fraction"), py::arg("size_arg") = ImVec2(-1,0), py::arg("overlay") = nullptr);
 
 	m.def("color_button", &ImGui::ColorButton, py::arg("desc_id"), py::arg("col"), py::arg("flags") = 0, py::arg("size") = ImVec2(0,0), "display a colored square/button, hover for details, return true when pressed.");
