@@ -318,6 +318,7 @@ PYBIND11_MODULE(_bimpy, m) {
 		.value("AlwaysVerticalScrollbar", ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysVerticalScrollbar)
 		.value("AlwaysHorizontalScrollbar", ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysHorizontalScrollbar)
 		.value("AlwaysUseWindowPadding", ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysUseWindowPadding)
+		.value("NoDocking", ImGuiWindowFlags_::ImGuiWindowFlags_NoDocking)
 		.export_values();
 
 	py::enum_<ImGuiInputTextFlags_>(m, "InputTextFlags", py::arithmetic())
@@ -775,7 +776,7 @@ PYBIND11_MODULE(_bimpy, m) {
 	m.def("push_id_str", [](const char* str_id_begin, const char* str_id_end){ ImGui::PushID(str_id_begin, str_id_end); }, py::arg("str_id_begin"), py::arg("str_id_end") = nullptr);
 	m.def("push_id_int", [](int int_id){ ImGui::PushID(int_id); } );
 	m.def("pop_id", &ImGui::PopID);
-	m.def("get_id_str", [](const char* str_id_begin, const char* str_id_end){ ImGui::GetID(str_id_begin, str_id_end); }, py::arg("str_id_begin"), py::arg("str_id_end") = nullptr);
+	m.def("get_id_str", [](const char* str_id_begin, const char* str_id_end){ return ImGui::GetID(str_id_begin, str_id_end); }, py::arg("str_id_begin"), py::arg("str_id_end") = nullptr);
 
 	m.def("text", [](const char* text){ ImGui::Text("%s", text); });
 	m.def("text_colored", [](const ImVec4& col, const char* text){ ImGui::TextColored(col, "%s", text); });
@@ -1306,5 +1307,9 @@ PYBIND11_MODULE(_bimpy, m) {
 
 	m.def("set_next_window_dock_id", &ImGui::SetNextWindowDockID);
 	m.def("get_window_dock_id", &ImGui::GetWindowDockID);
+
+	m.def("dock_space", [](ImGuiID id){
+		 ImGui::DockSpace(id, ImVec2(0, 0), 0, NULL);
+	});
 
 }
