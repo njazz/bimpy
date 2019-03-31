@@ -1177,8 +1177,13 @@ PYBIND11_MODULE(_bimpy, m) {
 
 	m.def("set_item_allow_overlap", &ImGui::SetItemAllowOverlap);
 
+	// m.def("is_rect_visible", &ImGui::IsRectVisible);
 	m.def("get_time", &ImGui::GetTime);
 	m.def("get_frame_count", &ImGui::GetFrameCount);
+	m.def("set_state_storage", &ImGui::SetStateStorage);
+	m.def("get_state_storage", &ImGui::GetStateStorage);
+	m.def("calc_text_size", &ImGui::CalcTextSize);
+	m.def("calc_list_clipping", &ImGui::CalcListClipping);
 
 	m.def("get_key_index", &ImGui::GetKeyIndex);
 	m.def("is_key_down", &ImGui::IsKeyDown);
@@ -1319,5 +1324,7 @@ PYBIND11_MODULE(_bimpy, m) {
 	m.def("dock_space", [](ImGuiID id){
 		 ImGui::DockSpace(id, ImVec2(0, 0), 0, NULL);
 	});
+
+
 
 }
