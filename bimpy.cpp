@@ -226,6 +226,14 @@ PYBIND11_MODULE(_bimpy, m) {
 	null.null = true;
 
 	m.doc() = "bimpy - bundled imgui for python";
+    
+	py::enum_<ImGuiDir_>(m, "Direction", py::arithmetic())
+		.value("None", ImGuiDir_::ImGuiDir_None)
+		.value("Left", ImGuiDir_::ImGuiDir_Left)
+		.value("Right", ImGuiDir_::ImGuiDir_Right)
+		.value("Up", ImGuiDir_::ImGuiDir_Up)
+		.value("Down", ImGuiDir_::ImGuiDir_Down)	
+		.export_values();
 
 	py::enum_<ImGuiCond_>(m, "Condition", py::arithmetic())
 		.value("Always", ImGuiCond_::ImGuiCond_Always)
@@ -275,6 +283,31 @@ PYBIND11_MODULE(_bimpy, m) {
 		//.value("NoUndoRedo", ImGuiInputTextFlags_::ImGuiInputTextFlags_NoUndoRedo)
 		.value("Multiline", ImGuiInputTextFlags_::ImGuiInputTextFlags_Multiline)
 		.export_values();
+	
+	py::enum_<ImGuiTreeNodeFlags_>(m, "TreeNodeFlags", py::arithmetic())
+		.value("None", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_None)
+		.value("Selected", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Selected)
+		.value("Framed", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Framed)
+		.value("AllowItemOverlap", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_AllowItemOverlap)
+		.value("NoTreePushOnOpen", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_NoTreePushOnOpen)
+		.value("NoAutoOpenOnLog", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_NoAutoOpenOnLog)
+		.value("DefaultOpen", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen)
+		.value("OpenOnDoubleClick", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnDoubleClick)
+		.value("OpenOnArrow", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnArrow)
+		.value("Leaf", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf)
+		.value("Bullet", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Bullet)
+		.value("FramePadding", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_FramePadding)
+		.value("NavLeftJumpsBackHere", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_NavLeftJumpsBackHere)		
+		.export_values();
+
+	py::enum_<ImGuiSelectableFlags_>(m, "SelectableFlags", py::arithmetic())
+		.value("None", ImGuiSelectableFlags_::ImGuiSelectableFlags_None)
+		.value("DontClosePopups", ImGuiSelectableFlags_::ImGuiSelectableFlags_DontClosePopups)
+		.value("SpanAllColumns", ImGuiSelectableFlags_::ImGuiSelectableFlags_SpanAllColumns)
+		.value("AllowDoubleClick", ImGuiSelectableFlags_::ImGuiSelectableFlags_AllowDoubleClick)
+		.value("Disabled", ImGuiSelectableFlags_::ImGuiSelectableFlags_Disabled)
+		.export_values();
+
 
 	py::enum_<ImGuiCol_>(m, "Colors")
 		.value("Text", ImGuiCol_::ImGuiCol_Text)
@@ -372,6 +405,21 @@ PYBIND11_MODULE(_bimpy, m) {
 			{
 				self.Render();
 			});
+
+	py::class_<ImGuiListClipper>(m, "ImGuiListClipper")
+		.def(py::init( [](int items_count, float items_height)
+			{
+				return ImGuiListClipper(items_count, items_height);
+			}),
+			"",
+			py::arg("items_count"), py::arg("items_height") = -1.0f)
+		.def("step", &ImGuiListClipper::Step)
+		.def_readwrite("start_pos_y", &ImGuiListClipper::StartPosY)
+		.def_readwrite("items_heigth", &ImGuiListClipper::ItemsHeight)
+		.def_readwrite("items_count", &ImGuiListClipper::ItemsCount)
+		.def_readwrite("step_no", &ImGuiListClipper::StepNo)
+		.def_readwrite("display_start", &ImGuiListClipper::DisplayStart)
+		.def_readwrite("display_end", &ImGuiListClipper::DisplayEnd);
 
 	py::enum_<ImDrawCornerFlags_>(m, "Corner")
 		.value("TopLeft", ImDrawCornerFlags_TopLeft)
@@ -486,16 +534,50 @@ PYBIND11_MODULE(_bimpy, m) {
 		{
 			ImGui::StyleColorsLight();
 		});
-
-	m.def("show_test_window", [](){ ImGui::ShowDemoWindow(); }, "create demo/test window (previously called ShowTestWindow). demonstrate most ImGui features.");	// deprecated
-	m.def("show_demo_window", [](){ ImGui::ShowDemoWindow(); }, "create demo/test window (previously called ShowTestWindow). demonstrate most ImGui features.");
-	m.def("show_metrics_window", [](){ ImGui::ShowMetricsWindow(); }, "create metrics window. display ImGui internals: draw commands (with individual draw calls and vertices), window list, basic internal state, etc.");
-	m.def("show_style_editor", [](){ ImGui::ShowStyleEditor(); }, "add style editor block (not a window). you can pass in a reference ImGuiStyle structure to compare to, revert to and save to (else it uses the default style)");
-	m.def("show_style_selector", [](const char* label){ ImGui::ShowStyleSelector(label); }, "add style selector block (not a window), essentially a combo listing the default styles.");
-	m.def("show_font_selector", [](const char* label){ ImGui::ShowFontSelector(label); }, "add font selector block (not a window), essentially a combo listing the loaded fonts.");
-	m.def("show_user_guide", [](){ ImGui::ShowUserGuide(); }, "add basic help/info block (not a window): how to manipulate ImGui as a end-user (mouse/keyboard controls).");
-
-
+	
+	m.def("show_test_window", [](Bool& opened)
+		{
+			ImGui::ShowDemoWindow(opened.null ? nullptr : &opened.value);
+		},
+		"create demo/test window (previously called ShowTestWindow). demonstrate most ImGui features.",
+		py::arg("opened") = null);	// deprecated
+	
+	m.def("show_demo_window", [](Bool& opened)
+		{ 
+			ImGui::ShowDemoWindow(opened.null ? nullptr : &opened.value); 
+		},
+		"create demo/test window (previously called ShowTestWindow). demonstrate most ImGui features.",
+		py::arg("opened") = null);
+	
+	m.def("show_metrics_window", [](Bool& opened) 
+		{ 
+			ImGui::ShowMetricsWindow(opened.null ? nullptr : &opened.value); 
+		}, 
+		"create metrics window. display ImGui internals: draw commands (with individual draw calls and vertices), window list, basic internal state, etc.",
+		py::arg("opened") = null);
+	
+	m.def("show_style_editor", []()
+		{
+			ImGui::ShowStyleEditor();
+		},
+		"add style editor block (not a window). you can pass in a reference ImGuiStyle structure to compare to, revert to and save to (else it uses the default style)");
+	m.def("show_style_selector", [](const char* label)
+		{
+			ImGui::ShowStyleSelector(label);
+		},
+		"add style selector block (not a window), essentially a combo listing the default styles.");
+	m.def("show_font_selector", [](const char* label)
+		{
+			ImGui::ShowFontSelector(label);
+		},
+		"add font selector block (not a window), essentially a combo listing the loaded fonts.");
+	m.def("show_user_guide", []()
+		{
+			ImGui::ShowUserGuide();
+		},
+		"add basic help/info block (not a window): how to manipulate ImGui as a end-user (mouse/keyboard controls).");
+	
+	
 	m.def("begin",[](const std::string& name, Bool& opened, ImGuiWindowFlags flags) -> bool
 		{
 			return ImGui::Begin(name.c_str(), opened.null ? nullptr : &opened.value, flags);
@@ -507,7 +589,7 @@ PYBIND11_MODULE(_bimpy, m) {
 
 	m.def("begin_child",[](const std::string& str_id, const ImVec2& size, bool border, ImGuiWindowFlags extra_flags) -> bool
 		{
-			return ImGui::BeginChild(str_id.c_str(), size);
+			return ImGui::BeginChild(str_id.c_str(), size, border);
 		},
 		"begin a scrolling region. size==0.0f: use remaining window size, size<0.0f: use remaining window size minus abs(size). size>0.0f: fixed size. each axis can use a different mode, e.g. ImVec2(0,400).",
 		py::arg("str_id"), py::arg("size") = ImVec2(0,0), py::arg("border") = false, py::arg("extra_flags") = ImGuiWindowFlags_(0));
@@ -696,6 +778,12 @@ PYBIND11_MODULE(_bimpy, m) {
 	m.def("button", &ImGui::Button, py::arg("label"), py::arg("size") = ImVec2(0,0));
 	m.def("small_button", &ImGui::SmallButton);
 	m.def("invisible_button", &ImGui::InvisibleButton);
+	m.def("arrow_button", [](const char* str_id, ImGuiDir dir)
+		{
+			return ImGui::ArrowButton(str_id, dir);
+		},
+		py::arg("str_id"), py::arg("dir") = -1 );
+	
 	m.def("collapsing_header", [](const char* label, ImGuiTreeNodeFlags flags){ return ImGui::CollapsingHeader(label, flags); }, py::arg("label"), py::arg("flags") = 0);
 	m.def("checkbox", [](const char* label, Bool& v){ return ImGui::Checkbox(label, &v.value); });
 	m.def("radio_button", [](const char* label, bool active){ return ImGui::RadioButton(label, active); });
@@ -842,14 +930,31 @@ PYBIND11_MODULE(_bimpy, m) {
 	}, py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"), py::arg("v4"), py::arg("flags") = 0);
 
 
-	m.def("color_edit", [](const char* label, ImVec4 col)->bool
-	{
-		return ImGui::ColorEdit4(label, &col.x);
+	m.def("color_edit", [](const char* label, ImVec4& col)->bool
+	{	
+		float color[4] = {col.x, col.y, col.z, col.w};
+		bool result = ImGui::ColorEdit4(label, color);
+		col.x = color[0];
+		col.y = color[1];
+		col.z = color[2];
+		col.w = color[3];
+		return result;
 	});
-	m.def("color_picker", [](const char* label, ImVec4 col)->bool
-	{
-		return ImGui::ColorPicker4(label, &col.x);
+	m.def("color_picker", [](const char* label, ImVec4& col)->bool
+	{	
+		float color[4] = {col.x, col.y, col.z, col.w};
+		bool result = ImGui::ColorPicker4(label, color);
+		col.x = color[0];
+		col.y = color[1];
+		col.z = color[2];
+		col.w = color[3];
+		return result;
 	});
+	
+	m.def("color_convert_float4_to_u32", [](const ImVec4& in)->ImU32
+	{	
+		return ImGui::ColorConvertFloat4ToU32(in);
+	}); 
 
 
 	m.def("slider_float", [](const char* label, Float& v, float v_min, float v_max, const char* display_format, float power)
@@ -953,6 +1058,28 @@ PYBIND11_MODULE(_bimpy, m) {
 		, py::arg("stride") = sizeof(float)
 		);
 
+	m.def("plot_histogram", [](
+		const char* label,
+		const std::vector<float>& values,
+		int values_offset = 0,
+		const char* overlay_text = NULL,
+		float scale_min = FLT_MAX,
+		float scale_max = FLT_MAX,
+		ImVec2 graph_size = ImVec2(0,0),
+		int stride = sizeof(float))
+		{
+			ImGui::PlotHistogram(label, values.data(), (int)values.size(), values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
+		}
+		, py::arg("label")
+		, py::arg("values")
+		, py::arg("values_offset") = 0
+		, py::arg("overlay_text") = nullptr
+		, py::arg("scale_min") = FLT_MAX
+		, py::arg("scale_max") = FLT_MAX
+		, py::arg("graph_size") = ImVec2(0,0)
+		, py::arg("stride") = sizeof(float)
+		);
+
 	m.def("progress_bar", &ImGui::ProgressBar, py::arg("fraction"), py::arg("size_arg") = ImVec2(-1,0), py::arg("overlay") = nullptr);
 
 	m.def("color_button", &ImGui::ColorButton, py::arg("desc_id"), py::arg("col"), py::arg("flags") = 0, py::arg("size") = ImVec2(0,0), "display a colored square/button, hover for details, return true when pressed.");
@@ -973,11 +1100,11 @@ PYBIND11_MODULE(_bimpy, m) {
 
 	m.def("selectable", [](
 		std::string label,
-		Bool& selected,
+		Bool selected = false,
 		ImGuiSelectableFlags flags = 0,
 		ImVec2 size = ImVec2(0,0))->bool
 		{
-			return ImGui::Selectable(label.c_str(), &selected.value, flags, size);
+			return ImGui::Selectable(label.c_str(), (bool*) (selected.null ? nullptr : &selected.value), flags, size);
 		}
 		, py::arg("label")
 		, py::arg("selected")
