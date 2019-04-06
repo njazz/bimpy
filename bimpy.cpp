@@ -1182,7 +1182,7 @@ PYBIND11_MODULE(_bimpy, m) {
 	m.def("get_frame_count", &ImGui::GetFrameCount);
 	m.def("set_state_storage", &ImGui::SetStateStorage);
 	m.def("get_state_storage", &ImGui::GetStateStorage);
-	m.def("calc_text_size", &ImGui::CalcTextSize);
+	m.def("calc_text_size", [](std::string text, bool hide_text_after_double_hash, float wrap_width){return ImGui::CalcTextSize(text.c_str(), NULL, hide_text_after_double_hash, wrap_width);}, py::arg("text"), py::arg("hide_text_after_double_hash") = false, py::arg("wrap_width")=-1);
 	m.def("calc_list_clipping", &ImGui::CalcListClipping);
 
 	m.def("get_key_index", &ImGui::GetKeyIndex);
@@ -1325,6 +1325,9 @@ PYBIND11_MODULE(_bimpy, m) {
 		 ImGui::DockSpace(id, ImVec2(0, 0), 0, NULL);
 	});
 
+    // internal
+    m.def("item_size", [](const ImVec2& size, float text_offset_y = 0.0f){ImGui::ItemSize(size,text_offset_y);});
+    m.def("item_add", [] (const ImRect& bb, ImGuiID id){ImGui::ItemAdd(bb,id);});
 
 
 }
