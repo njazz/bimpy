@@ -291,13 +291,13 @@ PYBIND11_MODULE(_bimpy, m) {
 	null.null = true;
 
 	m.doc() = "bimpy - bundled imgui for python";
-    
+
 	py::enum_<ImGuiDir_>(m, "Direction", py::arithmetic())
 		.value("None", ImGuiDir_::ImGuiDir_None)
 		.value("Left", ImGuiDir_::ImGuiDir_Left)
 		.value("Right", ImGuiDir_::ImGuiDir_Right)
 		.value("Up", ImGuiDir_::ImGuiDir_Up)
-		.value("Down", ImGuiDir_::ImGuiDir_Down)	
+		.value("Down", ImGuiDir_::ImGuiDir_Down)
 		.export_values();
 
 	py::enum_<ImGuiCond_>(m, "Condition", py::arithmetic())
@@ -349,7 +349,7 @@ PYBIND11_MODULE(_bimpy, m) {
 		//.value("NoUndoRedo", ImGuiInputTextFlags_::ImGuiInputTextFlags_NoUndoRedo)
 		.value("Multiline", ImGuiInputTextFlags_::ImGuiInputTextFlags_Multiline)
 		.export_values();
-	
+
 	py::enum_<ImGuiTreeNodeFlags_>(m, "TreeNodeFlags", py::arithmetic())
 		.value("None", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_None)
 		.value("Selected", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Selected)
@@ -363,7 +363,7 @@ PYBIND11_MODULE(_bimpy, m) {
 		.value("Leaf", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf)
 		.value("Bullet", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Bullet)
 		.value("FramePadding", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_FramePadding)
-		.value("NavLeftJumpsBackHere", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_NavLeftJumpsBackHere)		
+		.value("NavLeftJumpsBackHere", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_NavLeftJumpsBackHere)
 		.export_values();
 
 	py::enum_<ImGuiSelectableFlags_>(m, "SelectableFlags", py::arithmetic())
@@ -608,28 +608,28 @@ PYBIND11_MODULE(_bimpy, m) {
 		{
 			ImGui::StyleColorsLight();
 		});
-	
+
 	m.def("show_test_window", [](Bool& opened)
 		{
 			ImGui::ShowDemoWindow(opened.null ? nullptr : &opened.value);
 		},
 		"create demo/test window (previously called ShowTestWindow). demonstrate most ImGui features.",
 		py::arg("opened") = null);	// deprecated
-	
+
 	m.def("show_demo_window", [](Bool& opened)
-		{ 
-			ImGui::ShowDemoWindow(opened.null ? nullptr : &opened.value); 
+		{
+			ImGui::ShowDemoWindow(opened.null ? nullptr : &opened.value);
 		},
 		"create demo/test window (previously called ShowTestWindow). demonstrate most ImGui features.",
 		py::arg("opened") = null);
-	
-	m.def("show_metrics_window", [](Bool& opened) 
-		{ 
-			ImGui::ShowMetricsWindow(opened.null ? nullptr : &opened.value); 
-		}, 
+
+	m.def("show_metrics_window", [](Bool& opened)
+		{
+			ImGui::ShowMetricsWindow(opened.null ? nullptr : &opened.value);
+		},
 		"create metrics window. display ImGui internals: draw commands (with individual draw calls and vertices), window list, basic internal state, etc.",
 		py::arg("opened") = null);
-	
+
 	m.def("show_style_editor", []()
 		{
 			ImGui::ShowStyleEditor();
@@ -650,8 +650,8 @@ PYBIND11_MODULE(_bimpy, m) {
 			ImGui::ShowUserGuide();
 		},
 		"add basic help/info block (not a window): how to manipulate ImGui as a end-user (mouse/keyboard controls).");
-	
-	
+
+
 	m.def("begin",[](const std::string& name, Bool& opened, ImGuiWindowFlags flags) -> bool
 		{
 			return ImGui::Begin(name.c_str(), opened.null ? nullptr : &opened.value, flags);
@@ -679,7 +679,7 @@ PYBIND11_MODULE(_bimpy, m) {
 			return ImGui::BeginMenu(name.c_str(), (bool *) (enabled.null ? nullptr : &enabled.value));
 		},
 		"create a sub-menu entry. only call EndMenu() if this returns true!",
-		py::arg("name"), py::arg("enabled") = null);
+		py::arg("name"), py::arg("enabled") = Bool(true));
 	m.def("menu_item",[](const std::string& label, const std::string& shortcut, Bool& selected, Bool enabled) -> bool
 		{
 			return ImGui::MenuItem(label.c_str(), shortcut.c_str(), selected.null ? nullptr : &selected.value, enabled.value);
@@ -861,7 +861,7 @@ PYBIND11_MODULE(_bimpy, m) {
 			return ImGui::ArrowButton(str_id, dir);
 		},
 		py::arg("str_id"), py::arg("dir") = -1 );
-	
+
 	m.def("collapsing_header", [](const char* label, ImGuiTreeNodeFlags flags){ return ImGui::CollapsingHeader(label, flags); }, py::arg("label"), py::arg("flags") = 0);
 	m.def("checkbox", [](const char* label, Bool& v){ return ImGui::Checkbox(label, &v.value); });
 	m.def("radio_button", [](const char* label, bool active){ return ImGui::RadioButton(label, active); });
@@ -1009,7 +1009,7 @@ PYBIND11_MODULE(_bimpy, m) {
 
 
 	m.def("color_edit", [](const char* label, ImVec4& col)->bool
-	{	
+	{
 		float color[4] = {col.x, col.y, col.z, col.w};
 		bool result = ImGui::ColorEdit4(label, color);
 		col.x = color[0];
@@ -1019,7 +1019,7 @@ PYBIND11_MODULE(_bimpy, m) {
 		return result;
 	});
 	m.def("color_picker", [](const char* label, ImVec4& col)->bool
-	{	
+	{
 		float color[4] = {col.x, col.y, col.z, col.w};
 		bool result = ImGui::ColorPicker4(label, color);
 		col.x = color[0];
@@ -1028,11 +1028,11 @@ PYBIND11_MODULE(_bimpy, m) {
 		col.w = color[3];
 		return result;
 	});
-	
+
 	m.def("color_convert_float4_to_u32", [](const ImVec4& in)->ImU32
-	{	
+	{
 		return ImGui::ColorConvertFloat4ToU32(in);
-	}); 
+	});
 
 
 	m.def("slider_float", [](const char* label, Float& v, float v_min, float v_max, const char* display_format, float power)
